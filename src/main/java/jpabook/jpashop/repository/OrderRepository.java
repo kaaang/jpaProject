@@ -60,4 +60,27 @@ public class OrderRepository {
     }
 
 
+
+    public List<Order> findAllWithItem() {
+        //distinct는 중복을 제거해준다.
+        //데이터 베이스의 디스틴트는 한줄이 모두 같아야 중복을 제거해주지만
+        //jpa는 알아서 제거해준다. (order가 같은 id 값이면)
+        return em.createQuery(
+                "select distinct o from Order o " +
+                        "join fetch o.member m " +
+                        "join fetch  o.delivery d " +
+                        "join fetch o.orderItems oi " +
+                        "join fetch oi.item i", Order.class)
+                .getResultList();
+    }
+
+    public List<Order> findAllWithMemberDelivery(int offset, int limit) {
+        return em.createQuery(
+                "select o from Order o " +
+                        "join fetch o.member m " +
+                        "join fetch o.delivery d", Order.class)
+                .setFirstResult(offset)
+                .setMaxResults(limit)
+                .getResultList();
+    }
 }
